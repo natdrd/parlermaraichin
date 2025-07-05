@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traducteur Parler Maraîchin ↔ Français</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background-color: #3498db;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand {
+            color: #ffffff !important;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+        .nav-link {
+            color: #ffffff !important;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem !important;
+        }
+        .nav-link:hover {
+            color: #ecf0f1 !important;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .translation-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .word-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .phonetic-text {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        .info-link {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .info-link:hover {
+            text-decoration: underline;
+        }
+        .suggestions-list {
+            position: absolute;
+            width: 100%;
+            z-index: 1000;
+        }
+        .word-info {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .word-info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .word-info p {
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+        .language-switch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 15px;
+        }
+        .language-label {
+            font-size: 1.1em;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .switch-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #3498db;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: transform 0.3s ease;
+        }
+        .switch-btn:hover {
+            transform: scale(1.2);
+            color: #2980b9;
+        }
+        .radio-group {
+            display: none;
+        }
+        .clickable-word {
+            cursor: pointer;
+            color: #3498db;
+            transition: color 0.2s;
+        }
+        .clickable-word:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">Traducteur de Parler Maraîchin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/en-savoir-plus">En savoir plus</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="translation-box">
+                    <h2 class="text-center mb-4">Traducteur Parler Maraîchin ↔ Français</h2>
+                    <form method="POST" id="translationForm">
+                        <div class="mb-3">
+                            <label for="phrase" class="form-label">Entrez votre texte :</label>
+                            <input type="text" class="form-control" id="phrase" name="phrase" required>
+                        </div>
+                        <div class="language-switch">
+                            <span class="language-label" id="fromLang">Parler Maraîchin</span>
+                            <button type="button" class="switch-btn" id="switchLang">⇄</button>
+                            <span class="language-label" id="toLang">Français</span>
+                        </div>
+                        <div class="radio-group">
+                            <input type="radio" name="sens" id="patois-fr" value="patois-fr" {% if sens == 'patois-fr' %}checked{% endif %}>
+                            <input type="radio" name="sens" id="fr-patois" value="fr-patois" {% if sens == 'fr-patois' %}checked{% endif %}>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Traduire</button>
+                        </div>
+                    </form>
+                </div>
+
+                {% if traduction %}
+                <div class="translation-box">
+                    <h3 class="text-center mb-4">Traduction :</h3>
+                    <div id="translationResult" class="d-flex flex-wrap mb-3">
+                        {% for mot, original, phonetique in mots %}
+                        <div class="word-box me-2 mb-2">
+                            <div class="d-flex align-items-center">
+                                <div>
+                                    <strong class="clickable-word" data-mot="{{ original }}">{{ mot }}</strong>
+                                    {% if phonetique %}
+                                    <div class="phonetic-text">{{ phonetique }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex justify-content-center gap-2">
+                        <button class="btn btn-primary" id="playAllAudio">
+                            <span class="me-1">🔊</span> Écouter
+                        </button>
+                        <button class="btn btn-outline-primary" id="downloadText">
+                            <span class="me-1">📝</span> Exporter le texte
+                        </button>
+                        <button class="btn btn-outline-primary" id="downloadAudio">
+                            <span class="me-1">⬇️</span> Télécharger l'audio
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-4">
+                <div class="translation-box">
+                    <h3 class="text-center mb-4">Informations</h3>
+                    <div id="wordInfo">
+                        <div class="word-info">
+                            <h4>Définition</h4>
+                            <p id="definition">Sélectionnez un mot pour voir sa définition.</p>
+                        </div>
+                        <div class="word-info">
+                            <h4>Historique</h4>
+                            <p id="historique">Sélectionnez un mot pour voir son historique.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/en-savoir-plus" class="info-link">En savoir plus sur le parler maraîchin →</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('translationForm');
+            const phraseInput = document.getElementById('phrase');
+            const suggestionsList = document.createElement('ul');
+            const switchBtn = document.getElementById('switchLang');
+            const fromLang = document.getElementById('fromLang');
+            const toLang = document.getElementById('toLang');
+            const patoisFrRadio = document.getElementById('patois-fr');
+            const frPatoisRadio = document.getElementById('fr-patois');
+
+            suggestionsList.className = 'list-group suggestions-list';
+            phraseInput.parentNode.appendChild(suggestionsList);
+
+            // Initialiser les labels en fonction du sens de traduction actuel
+            if (patoisFrRadio.checked) {
+                fromLang.textContent = 'Parler Maraîchin';
+                toLang.textContent = 'Français';
+            } else {
+                fromLang.textContent = 'Français';
+                toLang.textContent = 'Parler Maraîchin';
+            }
+
+            // Fonction pour changer le sens de la traduction
+            function switchLanguage() {
+                if (patoisFrRadio.checked) {
+                    patoisFrRadio.checked = false;
+                    frPatoisRadio.checked = true;
+                    fromLang.textContent = 'Français';
+                    toLang.textContent = 'Parler Maraîchin';
+                } else {
+                    patoisFrRadio.checked = true;
+                    frPatoisRadio.checked = false;
+                    fromLang.textContent = 'Parler Maraîchin';
+                    toLang.textContent = 'Français';
+                }
+            }
+
+            // Écouteur d'événement pour le bouton de changement de langue
+            switchBtn.addEventListener('click', switchLanguage);
+
+            // Fonction pour mettre à jour les suggestions
+            function updateSuggestions(input) {
+                const words = input.value.split(' ');
+                const lastWord = words[words.length - 1];
+                
+                if (lastWord.length < 2) {
+                    suggestionsList.innerHTML = '';
+                    return;
+                }
+
+                const sens = document.querySelector('input[name="sens"]:checked').value;
+                fetch('/suggestions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prefix: lastWord, sens })
+                })
+                .then(response => response.json())
+                .then(suggestions => {
+                    suggestionsList.innerHTML = '';
+                    suggestions.forEach(suggestion => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item list-group-item-action';
+                        li.textContent = suggestion;
+                        li.addEventListener('click', () => {
+                            words[words.length - 1] = suggestion;
+                            input.value = words.join(' ');
+                            suggestionsList.innerHTML = '';
+                        });
+                        suggestionsList.appendChild(li);
+                    });
+                });
+            }
+
+            // Écouteur d'événement pour la saisie
+            phraseInput.addEventListener('input', function() {
+                updateSuggestions(this);
+            });
+
+            // Écouteur d'événement pour la touche Espace
+            phraseInput.addEventListener('keydown', function(e) {
+                if (e.key === ' ') {
+                    const words = this.value.split(' ');
+                    if (words.length > 1) {
+                        const lastWord = words[words.length - 2];
+                        if (lastWord.length >= 2) {
+                            updateSuggestions(this);
+                        }
+                    }
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!phraseInput.contains(e.target) && !suggestionsList.contains(e.target)) {
+                    suggestionsList.innerHTML = '';
+                }
+            });
+
+            // Gestion des mots cliquables
+            document.querySelectorAll('.clickable-word').forEach(word => {
+                word.addEventListener('click', function() {
+                    const mot = this.dataset.mot;
+                    fetch('/infos', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ mot })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('definition').textContent = data.definition;
+                        document.getElementById('historique').textContent = data.historique;
+                    });
+                });
+            });
+
+            // Fonction pour obtenir le texte de la traduction
+            function getTranslationText() {
+                return Array.from(document.querySelectorAll('.word-box strong'))
+                    .map(el => el.textContent)
+                    .join(' ');
+            }
+
+            // Gestion du bouton pour écouter la traduction
+            document.getElementById('playAllAudio')?.addEventListener('click', function() {
+                const translationText = getTranslationText();
+                
+                fetch('/synthese-vocale', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        texte: translationText,
+                        langue: 'fr'
+                    })
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const audio = new Audio(URL.createObjectURL(blob));
+                    audio.play();
+                });
+            });
+
+            // Gestion du bouton pour exporter le texte
+            document.getElementById('downloadText')?.addEventListener('click', function() {
+                const translationText = getTranslationText();
+                const blob = new Blob([translationText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'traduction.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            // Gestion du bouton pour télécharger l'audio
+            document.getElementById('downloadAudio')?.addEventListener('click', function() {
+                const translationText = getTranslationText();
+                
+                fetch('/synthese-vocale', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        texte: translationText,
+                        langue: 'fr',
+                        download: true
+                    })
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'traduction.mp3';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

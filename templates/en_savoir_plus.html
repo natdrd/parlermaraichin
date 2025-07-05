@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>En savoir plus sur le parler maraîchin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background-color: #3498db;
+            min-height: 70px;  /* Hauteur minimale fixe */
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand {
+            color: #ffffff !important;
+            font-weight: bold;
+            font-size: 1.4rem;  /* Taille de police fixe */
+        }
+        .nav-link {
+            color: #ffffff !important;
+            font-size: 1.1rem;  /* Taille de police fixe */
+            padding: 0.5rem 1rem !important;  /* Padding fixe */
+        }
+        .nav-link:hover {
+            color: #ecf0f1 !important;
+        }
+        .content-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .info-text {
+            color: #34495e;
+            line-height: 1.6;
+        }
+        .example-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .map-container {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .map-legend {
+            font-size: 0.9rem;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">Traducteur de Parler Maraîchin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/en-savoir-plus">En savoir plus</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="content-section">
+                    <h1 class="section-title">Le Parler Maraîchin</h1>
+                    <p class="info-text">
+                        Le parler maraîchin est une variante du poitevin-saintongeais parlée dans le Marais poitevin, 
+                        une région naturelle située entre la Vendée, les Deux-Sèvres et la Charente-Maritime. 
+                        C'est une langue d'oïl qui a conservé de nombreuses caractéristiques anciennes du français.
+                    </p>
+                </div>
+
+                <div class="content-section">
+                    <h2 class="section-title">Caractéristiques linguistiques</h2>
+                    <div class="info-text">
+                        <p>Le parler maraîchin se distingue par plusieurs traits particuliers :</p>
+                        <ul>
+                            <li>Conservation de nombreux mots d'origine latine</li>
+                            <li>Utilisation de diphtongues spécifiques</li>
+                            <li>Particularités dans la prononciation du "r"</li>
+                            <li>Maintien de certaines consonnes finales</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2 class="section-title">Exemples de mots et expressions</h2>
+                    <div class="example-box">
+                        <p><strong>Maraîchin :</strong> "Chaille"</p>
+                        <p><strong>Français :</strong> "Pierre"</p>
+                    </div>
+                    <div class="example-box">
+                        <p><strong>Maraîchin :</strong> "Bourrine"</p>
+                        <p><strong>Français :</strong> "Maison traditionnelle en terre et paille"</p>
+                    </div>
+                    <div class="example-box">
+                        <p><strong>Maraîchin :</strong> "Maraîchinage"</p>
+                        <p><strong>Français :</strong> "Art de vivre et de parler maraîchin"</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2 class="section-title">Histoire et culture</h2>
+                    <p class="info-text">
+                        Le parler maraîchin est étroitement lié à l'histoire du Marais poitevin et à ses habitants, 
+                        les Maraîchins. Cette langue a été préservée grâce à l'isolement relatif de la région et 
+                        à la transmission orale entre les générations. Aujourd'hui, des efforts sont menés pour 
+                        sauvegarder et promouvoir ce patrimoine linguistique unique.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="content-section">
+                    <h2 class="section-title">Carte du Pays Maraîchin</h2>
+                    <div class="map-container">
+                        <img src="{{ url_for('static', filename='images/carte_maraichin.svg') }}" 
+                             alt="Carte du Pays Maraîchin" 
+                             class="img-fluid rounded">
+                        <div class="map-legend mt-3">
+                            <h4>Légende :</h4>
+                            <ul class="list-unstyled">
+                                <li><span class="legend-color" style="background-color: #3498db;"></span> Marais poitevin</li>
+                                <li><span class="legend-color" style="background-color: #2ecc71;"></span> Zones de parler maraîchin</li>
+                                <li><span class="legend-color" style="background-color: #e74c3c;"></span> Villes principales</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

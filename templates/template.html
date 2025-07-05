@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traducteur Patois ↔ Français</title>
+</head>
+<body>
+    <h1>Traducteur Patois ↔ Français</h1>
+    <form id="traduction-form">
+        <label for="phrase">Entrez une phrase :</label><br>
+        <input type="text" id="phrase" name="phrase"><br>
+        
+        <label for="sens">Direction de traduction :</label><br>
+        <select id="sens" name="sens">
+            <option value="Patois → Français">Patois → Français</option>
+            <option value="Français → Patois">Français → Patois</option>
+        </select><br><br>
+        
+        <button type="submit">Traduire</button>
+    </form>
+
+    <h3>Traduction :</h3>
+    <p id="traduction"></p>
+
+    <script>
+        document.getElementById('traduction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const phrase = document.getElementById('phrase').value;
+            const sens = document.getElementById('sens').value;
+            
+            fetch('/traduire', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `phrase=${phrase}&sens=${sens}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('traduction').textContent = data.traduction;
+            })
+            .catch(error => console.error('Erreur:', error));
+        });
+    </script>
+</body>
+</html>
