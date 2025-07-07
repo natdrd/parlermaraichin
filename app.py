@@ -5,6 +5,7 @@ import unicodedata
 from flask import Flask, render_template, request, jsonify, send_file, session
 from gtts import gTTS
 import tempfile
+from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'votre-cle-secrete-par-defaut')
@@ -287,33 +288,21 @@ def synthese_vocale():
     print(f"Texte: {texte}")
     print(f"Téléchargement: {download}")
     
-    # Créer un fichier temporaire pour stocker l'audio
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_file:
-        temp_file_path = temp_file.name
-        print(f"Fichier temporaire créé: {temp_file_path}")
-        
-        # Utiliser gTTS pour la synthèse vocale
-        tts = gTTS(text=texte, lang='fr')
-        tts.save(temp_file_path)
-        
-        # Vérifier si le fichier a été créé et a une taille
-        if os.path.exists(temp_file_path):
-            file_size = os.path.getsize(temp_file_path)
-            print(f"Fichier audio créé: {temp_file_path}, taille: {file_size} octets")
-            
-            # Si c'est un téléchargement, forcer le téléchargement du fichier
-            if download:
-                return send_file(
-                    temp_file_path,
-                    mimetype='audio/mpeg',
-                    as_attachment=True,
-                    download_name=f"{texte}.mp3"
-                )
-            else:
-                return send_file(temp_file_path, mimetype='audio/mpeg')
-        else:
-            print(f"ERREUR: Le fichier audio n'a pas été créé: {temp_file_path}")
-            return jsonify({'error': 'Erreur lors de la création du fichier audio'}), 500
+    # Générer l'audio en mémoire (sans fichier temporaire)
+    mp3_fp = BytesIO()
+    tts = gTTS(text=texte, lang='fr')
+    tts.write_to_fp(mp3_fp)
+    mp3_fp.seek(0)
+
+    if download:
+        return send_file(
+            mp3_fp,
+            mimetype='audio/mpeg',
+            as_attachment=True,
+            download_name=f"{texte}.mp3"
+        )
+    else:
+        return send_file(mp3_fp, mimetype='audio/mpeg')
 
 @app.route('/en-savoir-plus')
 def en_savoir_plus():
